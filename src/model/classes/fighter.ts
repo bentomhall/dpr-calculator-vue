@@ -40,12 +40,8 @@ class Fighter extends ClassEntity {
 				return 'Greatsword (Champion)'
 			case 'snb':
 				return 'Sword n\' Board (Champion)'
-			case 'gs_pa':
-				return 'Power Attacking Greatsword'
 			case 'pam':
-				return 'Pole Arm Master (glaive)'
-			case 'gwm_pam':
-				return 'GWM/PAM (glaive)'
+				return 'Pole Arm Master'
 			case 'useActionSurge':
 				return 'Enable Action Surge'
 			case 'gWMProc':
@@ -63,7 +59,7 @@ class Fighter extends ClassEntity {
 
 	constructor(options: ClassOptions | null, provider: AccuracyProvider, mode: AccuracyMode) {
 		super(provider, mode)
-		this.validTypes = ['gs', 'snb', 'gs_pa', 'pam', 'gwm_pam']
+		this.validTypes = ['gs', 'snb', 'pam']
 		this.options = {
 			weaponDie: options?.baseDieSize ?? Dice.d8,
 			weaponType: options?.weaponType ?? WeaponDie.d8,
@@ -111,15 +107,19 @@ class Fighter extends ClassEntity {
 			case 'snb':
 				return this.dueling(level, aSUse, this.options, source);
 			case 'gs':
-				return this.greatWeaponMaster(level, aSUse, {weaponDie: this.options.weaponDie, weaponType: this.options.weaponType, gWMProc: 0, gWMStart: null, pAMStart: null}, source);
-			case 'gs_pa':
-				return this.greatWeaponMaster(level, aSUse, this.options, source);
-			case 'gwm_pam':
 				return this.greatWeaponMaster(level, aSUse, this.options, source);
 			case 'pam':
 				return this.polearmMasterOnly(level, aSUse, this.options, source);
 			default:
 				break;
+		}
+	}
+
+	getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+		return {
+			common:new Set(['weaponType', 'baseDieSize', 'advantage', 'disadvantage']),
+            toggles: new Set(['useActionSurge', 'pam']), 
+            dials: new Set(['gWMProc', 'gWMStart'])
 		}
 	}
 

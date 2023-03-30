@@ -22,6 +22,14 @@ class Warlock extends ClassEntity {
 		]
 	}
 
+	getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+		return {
+			common: new Set(['advantage', 'disadvantage']), 
+            toggles:new Set(['hasAB']),
+            dials: new Set(['rounds', 'duration'])
+		}
+	}
+
 	constructor(options: ClassOptions|null, provider: AccuracyProvider, mode: AccuracyMode) {
 		super(provider, mode)
 		this.options = {

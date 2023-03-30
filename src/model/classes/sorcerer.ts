@@ -57,6 +57,14 @@ export class Sorcerer extends ClassEntity {
       }
   }
 
+  getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+      return {
+        common:new Set(['advantage', 'disadvantage', 'baseDieSize']), 
+        toggles:new Set(['useQuicken', 'hasMatchingElementalAffinity']),
+        dials: new Set(['rounds'])
+      }
+  }
+
   public calculate(type: string, level: number): DamageOutput {
     let modifier = this.modifiers[level - 1];
     let source = new AttackSource(this.accuracyProvider, this.accuracyMode, this.options.advantage, this.options.disadvantage);

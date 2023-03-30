@@ -81,6 +81,14 @@ export class Wizard extends ClassEntity {
 		]
     }
 
+	getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+		return {
+			common: new Set(['advantage', 'disadvantage', 'procChance', 'baseDieSize']),
+            toggles: new Set(['empoweredEvocation', 'preferWeapons']), 
+            dials:new Set([])
+		}
+	}
+
 	//firebolt or weapon until extra attack, then weapon + weapon cantrip.
 	public bladesinger(level: number, accuracyProvider: AccuracyProvider, accuracyMode: AccuracyMode, options?: WizardOptions): DamageOutput {
 		let weaponMod = options?.preferWeapons ? this.modifiers[level -1] : this.dexModifier[level - 1];

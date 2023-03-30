@@ -126,109 +126,73 @@
             title="Barbarian"  
             :presets="state.classInstances.get('barbarian').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('barbarian')" 
-            @config-selected="onSelected($event)" 
-            :show-options="new Set(['baseDieSize'])" 
-            :toggles="['useRage']" 
-            :dials="['gWMProcRate', 'combats', 'roundsPerLR', 'recklessPercent']"
+            @config-selected="onSelected($event)"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Bard"  
             :presets="state.classInstances.get('bard').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('bard')" 
-            @config-selected="onSelected($event)" 
-            :show-options="new Set(['advantage', 'disadvantage', 'baseDieSize', 'saveType'])" 
-            :toggles="[]" 
-            :dials="[]"
+            @config-selected="onSelected($event)"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Cleric"  
             :presets="state.classInstances.get('cleric').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('cleric')" 
             @config-selected="onSelected($event)" 
-            :show-options="new Set(['procRate', 'baseDieSize', 'saveType'])" 
-            :toggles="[]" 
-            :dials="['uptime']"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Druid"  
             :presets="state.classInstances.get('druid').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('druid')" 
             @config-selected="onSelected($event)" 
-            :show-options="new Set(['advantage', 'disadvantage'])" 
-            :toggles="[]" 
-            :dials="[]"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Fighter"  
             :presets="state.classInstances.get('fighter').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('fighter')" 
             @config-selected="onSelected($event)" 
-            :show-options="new Set(['weaponType', 'baseDieSize', 'advantage', 'disadvantage'])" 
-            :toggles="['useActionSurge']" 
-            :dials="['gWMProc', 'gWMStart']"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Monk"  
             :presets="state.classInstances.get('monk').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('monk')" 
             @config-selected="onSelected($event)" 
-            :show-options="new Set(['advantage', 'disadvantage'])" 
-            :toggles="['unarmedOnly']" 
-            :dials="['rounds', 'rests']"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Paladin"  
             :presets="state.classInstances.get('paladin').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('paladin')" 
-            @config-selected="onSelected($event)" 
-            :show-options="new Set(['advantage', 'disadvantage', 'baseDieSize'])" 
-            :toggles="['oncePerTurn', 'highestSlotFirst', 'greatWeaponStyle', 'greatWeaponMaster']" 
-            :dials="['rounds']"
+            @config-selected="onSelected($event)"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Ranger"  
             :presets="state.classInstances.get('ranger').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('ranger')" 
             @config-selected="onSelected($event)" 
-            :show-options="new Set(['advantage', 'disadvantage', 'baseDieSize'])" 
-            :toggles="['archery']" 
-            :dials="['markUptime']"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Rogue"  
             :presets="state.classInstances.get('rogue').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('rogue')" 
             @config-selected="onSelected($event)" 
-            :show-options="new Set(['baseDieSize', 'procChance', 'advantage', 'disadvantage'])" 
-            :toggles="[]" 
-            :dials="[]"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Sorcerer"  
             :presets="state.classInstances.get('sorcerer').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('sorcerer')" 
             @config-selected="onSelected($event)" 
-            :show-options="new Set(['advantage', 'disadvantage', 'baseDieSize'])" 
-            :toggles="['useQuicken', 'hasMatchingElementalAffinity']" 
-            :dials="['rounds']"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Warlock"  
             :presets="state.classInstances.get('warlock').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('warlock')" 
             @config-selected="onSelected($event)" 
-            :show-options="new Set(['advantage', 'disadvantage'])" 
-            :toggles="['hasAB']" 
-            :dials="['rounds', 'duration']"
           ></ClassConfigCard>
           <ClassConfigCard 
             title="Wizard"  
             :presets="state.classInstances.get('wizard').presets(state.accuracyProvider, state.accuracyMode as AccuracyMode)" 
             :base-object="state.classInstances.get('wizard')" 
-            @config-selected="onSelected($event)" 
-            :show-options="new Set(['advantage', 'disadvantage', 'procChance', 'baseDieSize'])" 
-            :toggles="['empoweredEvocation', 'preferWeapons']" 
-            :dials="[]"
+            @config-selected="onSelected($event)"
           ></ClassConfigCard>
         </div>
         <v-btn @click="showConfig" style="margin-top:16px">Hide Configuration Options</v-btn>

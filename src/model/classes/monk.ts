@@ -38,15 +38,13 @@ class Monk extends ClassEntity {
 			rests: options?.dials?.get('rests') ?? 0,
 			rounds: options?.dials?.get('rounds') ?? 1
 		}
-		this.validTypes = ['qs', 'mercy', 'unarmed', 'astral']
+		this.validTypes = ['no-sub', 'mercy', 'astral']
 	}
 
 	getDescription(key: string): string {
 		switch(key) {
-			case 'qs':
-				return 'Quarterstaff (no subclass)'
-			case 'unarmed':
-				return 'Unarmed (no subclass)'
+			case 'no-sub':
+				return 'No subclass selected'
 			case 'mercy':
 				return 'Way of Mercy'
 			case 'astral':
@@ -59,6 +57,14 @@ class Monk extends ClassEntity {
 				return 'Combat rounds per short rest'
 			default:
 				return ''
+		}
+	}
+
+	getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+		return {
+			common: new Set(['advantage', 'disadvantage']),
+			toggles: new Set(['unarmedOnly']),
+			dials: new Set(['rounds', 'rests'])
 		}
 	}
 
@@ -92,9 +98,9 @@ class Monk extends ClassEntity {
 			base = this.quarterstaff(level, this.accuracyProvider, this.accuracyMode, this.options);
 		} 
 		if (type == 'mercy') {
-      let handAndFlurry = this.handOfHarm(level, rounds, rests, source);
-      extraDamage = handAndFlurry.hoh;
-      flurryDamage = handAndFlurry.flurry;
+			let handAndFlurry = this.handOfHarm(level, rounds, rests, source);
+			extraDamage = handAndFlurry.hoh;
+			flurryDamage = handAndFlurry.flurry;
 		} else if (type == 'astral') {
 			if (level > 3) {
 				flurryRounds = Math.min(rounds - 1, level * rests);

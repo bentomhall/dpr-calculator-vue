@@ -71,6 +71,14 @@ export class Bard extends ClassEntity {
             {name: 'Bard (rapier only)', type:'sword', obj: new Bard(new ClassOptions(0, 0, Dice.d8, 0, 1, null, WeaponDie.d8), accuracyProvider, accuracyMode)}
         ]
     }
+
+    getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+        return {
+            common: new Set(['advantage', 'disadvantage', 'saveType', 'baseDieSize']),
+            toggles: new Set(),
+            dials: new Set()
+        }
+    }
 }
 
 type BardOptions = {

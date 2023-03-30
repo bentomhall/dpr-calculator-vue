@@ -32,7 +32,8 @@ export class Barbarian extends ClassEntity{
 		this.options = {
 			weaponDieSize: options?.baseDieSize ?? Dice.d12,
 			weaponDieNumber: options?.baseDieCount ?? 1,
-			gWMProcRate: options?.dials?.get('gWMProcRate') ?? 0
+			gWMProcRate: options?.dials?.get('gWMProcRate') ?? 0,
+			useGWM: options?.toggles?.get('useGWM') ?? false
 		}
 		this.resources = {
 			useRage: options?.toggles?.get('useRage') ?? false,
@@ -40,13 +41,13 @@ export class Barbarian extends ClassEntity{
 			recklessPercent: options?.dials?.get('recklessPercent') ?? 0,
 			combats: options?.dials?.get('combats') ?? 1
 		}
-		this.validTypes = ['gwm', 'frenzy', 'expt', 'no-sub']
+		this.validTypes = ['frenzy', 'expt', 'no-sub']
 	}
 
 	getDescription(key: string): string {
 		switch(key) {
-			case 'gwm':
-				return 'Great Weapon Master (feat)'
+			case 'useGWM':
+				return 'Great Weapon Master (feat) @ 4'
 			case 'frenzy':
 				return 'Frenzy (subclass)'
 			case 'expt':
@@ -57,7 +58,7 @@ export class Barbarian extends ClassEntity{
 				return 'Combats per rong rest'
 			case 'roundsPerLR':
 				return 'Combat rounds per long rest'
-			case 'recklessPercent':
+			case 'reckless':
 				return 'Fraction using Reckless Attack (decimal)'
 			case 'useRage':
 				return 'Use rage as much as possible'
@@ -72,7 +73,8 @@ export class Barbarian extends ClassEntity{
 		this.options = {
 			weaponDieSize: options.baseDieSize ?? Dice.d12,
 			weaponDieNumber: options.baseDieCount ?? 1,
-			gWMProcRate: options.dials?.get('gWMProcRate') ?? 0
+			gWMProcRate: options.dials?.get('gWMProcRate') ?? 0,
+			useGWM: options.toggles?.get('useGWM') ?? false
 		}
 		this.resources = {
 			useRage: options.toggles?.get('useRage') ?? false,
@@ -84,7 +86,7 @@ export class Barbarian extends ClassEntity{
 	}
 
 	calculate(type: string, level: number): { damage: number; accuracy: number; } {
-		let modifier = type != 'gwm' ? this.modifiers[level - 1]: this.featModifiers[level -1];
+		let modifier = !this.options.useGWM ? this.modifiers[level - 1]: this.featModifiers[level -1];
 		let {hit, crit} = this.accuracyProvider.vsAC(level, this.accuracyMode, modifier, 0, 'flat');
 		let advantage = this.accuracyProvider.vsAC(level, this.accuracyMode, modifier, 0, 'advantage');
 		let fractionRaging = this.resources.useRage ? this.percentRaging(level, this.resources.combats) : 0
@@ -100,7 +102,7 @@ export class Barbarian extends ClassEntity{
 			let regularDamage = (1-reckless)*AttackSource.getDamageWithCrits(this.attacks(level), hitDamage, critDamage, hit, crit)+reckless*AttackSource.getDamageWithCrits(this.attacks(level), hitDamage, critDamage, advantage.hit, advantage.crit);
 			let frenziedDamage = (1-reckless)*AttackSource.getDamageWithCrits(this.attacks(level) + 1, hitDamage, critDamage, hit, crit)+reckless*AttackSource.getDamageWithCrits(this.attacks(level) + 1, hitDamage, critDamage, advantage.hit, advantage.crit);
 			total = (regular*regularDamage + frenziedDamage*roundsFrenzied)/this.resources.roundsPerLR;
-		} else if (type == 'gwm' && level >=4) {
+		} else if (this.options.useGWM && level >=4) {
 			let adjustedFlat = this.accuracyProvider.vsAC(level, this.accuracyMode, modifier - 5, 0, 'flat');
 			let adjustedAdvantage = this.accuracyProvider.vsAC(level, this.accuracyMode, modifier - 5, 0, 'advantage');
 			hitDamage += 10;
@@ -113,6 +115,14 @@ export class Barbarian extends ClassEntity{
 			total = (1-reckless)*AttackSource.getDamageWithCrits(this.attacks(level), hitDamage, critDamage, hit, crit)+reckless*AttackSource.getDamageWithCrits(this.attacks(level), hitDamage, critDamage, advantage.hit, advantage.crit);
 		}
 		return {damage: total, accuracy: hit}
+	}
+
+	public getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+		return {
+			common: new Set(['advantage', 'disadvantage', 'baseDieSize']),
+			toggles: new Set(['useGWM', 'useRage']),
+			dials: new Set(['gWMProcRate', 'roundsPerLR', 'reckless', 'combats'])
+		}
 	}
 
 	private frenzy(level: number, reckless: number, base: number, extra: number, extraMultiplied: number, roundsFrenzied: number, roundsPerLR: number, source: AttackSource): DamageOutput {
@@ -181,5 +191,6 @@ type BarbarianResources = {
 type BarbarianOptions = {
 	weaponDieSize: number,
 	weaponDieNumber: number,
-	gWMProcRate: number
+	gWMProcRate: number,
+	useGWM: boolean
 }

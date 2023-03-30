@@ -52,6 +52,15 @@ export class Ranger extends ClassEntity {
             {name: 'Longbow Ranger (archery + 100% hm)', type:'no-sub', obj: new Ranger(new ClassOptions(0, 0, Dice.d8, 0, 1, null, null, new Map([['archery', true]]), new Map([['markUptime', 1]])), provider, mode)},
         ]
     }
+
+    getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+        return {
+            common: new Set(['advantage', 'disadvantage', 'baseDieSize']),
+            toggles: new Set(['archery']), 
+            dials: new Set(['markUptime'])
+        }
+    }
+
     getDescription(key: string): string {
         switch(key) {
             case 'no-sub':

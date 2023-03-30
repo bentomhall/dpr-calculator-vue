@@ -62,6 +62,14 @@ class Cleric extends ClassEntity {
 		}
 	}
 
+	getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+		return {
+			common: new Set(['procRate', 'baseDieSize', 'saveType']),
+			toggles: new Set(),
+			dials: new Set(['uptime'])
+		}
+	}
+
 	public calculate(type: string, level: number): DamageOutput {
 		let sfDamage = {damage: 0, accuracy: 0};
 		if (type == 'ps-bb') {

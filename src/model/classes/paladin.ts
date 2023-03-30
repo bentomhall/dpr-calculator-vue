@@ -1,8 +1,7 @@
-import { CalculationProvider } from "../../controller";
 import { AttackDamageOptions, AttackSource, DamageOutput } from "../utility/attacks";
 import Dice from "../utility/dice";
 import { AttackModifier, Feat, FightingStyleHandler, WeaponDie } from "../utility/features";
-import { PresetProvider, AccuracyProvider, Preset, AccuracyMode } from "../utility/types";
+import { AccuracyProvider, Preset, AccuracyMode } from "../utility/types";
 import Util from "../utility/util";
 import { ClassEntity } from "./ClassEntity";
 import { ClassOptions } from "./ExtrasFactory";
@@ -13,16 +12,25 @@ export class Paladin extends ClassEntity {
   private featModifiers = [3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5];
   private options: PaladinOptions
   private resources: PaladinResources
+
   public calculate(type: string, level: number): DamageOutput {
     let source = new AttackSource(this.accuracyProvider, this.accuracyMode, this.options.advantage, this.options.disadvantage);
-    let smiteDice = this.smite(level, this.resources, this.resources.totalRounds, type == 'glaive' && level >=4);
-    if (type == 'glaive') {
+    let smiteDice = this.smite(level, this.resources, this.resources.totalRounds, this.options.poleArmMaster && level >=4);
+    if (this.options.poleArmMaster) {
       return this.poleArmMaster(level, source, this.options, smiteDice);
     }
     if (this.options.greatWeaponMaster) {
       return this.greatWeaponMaster(level, source, this.options, smiteDice);
     }
     return this.regular(level, source, this.options, smiteDice);
+  }
+
+  getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+      return {
+        common: new Set(['advantage', 'disadvantage', 'baseDieSize']), 
+        toggles: new Set(['oncePerTurn', 'highestSlotFirst', 'greatWeaponStyle', 'greatWeaponMaster', 'pam']), 
+        dials:new Set(['rounds'])
+      }
   }
 
   getDescription(key: string): string {
@@ -33,8 +41,6 @@ export class Paladin extends ClassEntity {
           return 'Greatsword w/GWM (no subclass)'
         case 'longsword':
           return 'Longsword + dueling (no subclass)'
-        case 'glaive':
-          return 'Glaive w/PAM (no subclass)'
         case 'rounds':
           return 'Rounds per LR'
         case 'greatWeaponStyle':
@@ -45,6 +51,8 @@ export class Paladin extends ClassEntity {
           return 'Limit smites to once per turn'
         case 'highestSlotFirst':
           return 'Use highest slot for smiting first'
+        case 'pam':
+          return 'Take PAM at 4'
         default:
           return ''
       }
@@ -52,14 +60,15 @@ export class Paladin extends ClassEntity {
 
   constructor(options: ClassOptions | null, provider: AccuracyProvider, mode: AccuracyMode) {
     super(provider, mode)
-    this.validTypes = ['gs', 'gwm', 'longsword', 'glaive']
+    this.validTypes = ['gs', 'gwm', 'longsword']
     this.options = {
       weaponType: options?.weaponType ?? WeaponDie.d8,
       baseDie: options?.baseDieSize ?? Dice.d8,
       advantage: options?.advantage ?? 0,
       disadvantage: options?.disadvantage ?? 0,
       greatWeaponStyle: options?.toggles?.get('greatWeaponStyle') ?? false,
-      greatWeaponMaster: options?.toggles?.get('greatWeaponMaster') ?? false
+      greatWeaponMaster: options?.toggles?.get('greatWeaponMaster') ?? false,
+      poleArmMaster: options?.toggles?.get('pam') ?? false
     }
     this.resources = {
       totalRounds: options?.dials?.get('rounds') ?? 10,
@@ -75,7 +84,8 @@ export class Paladin extends ClassEntity {
       advantage: options?.advantage ?? 0,
       disadvantage: options?.disadvantage ?? 0,
       greatWeaponStyle: options?.toggles?.get('greatWeaponStyle') ?? false,
-      greatWeaponMaster: options?.toggles?.get('greatWeaponMaster') ?? false
+      greatWeaponMaster: options?.toggles?.get('greatWeaponMaster') ?? false,
+      poleArmMaster: options?.toggles?.get('polearmMaster') ?? false
     }
     this.resources = {
       totalRounds: options?.dials?.get('rounds') ?? 10,
@@ -198,7 +208,8 @@ type PaladinOptions = {
   baseDie: number,
   greatWeaponStyle: boolean,
   weaponType: WeaponDie,
-  greatWeaponMaster?: boolean
+  greatWeaponMaster?: boolean,
+  poleArmMaster: boolean
 }
 
 type PaladinResources = {

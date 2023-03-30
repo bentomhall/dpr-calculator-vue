@@ -28,4 +28,8 @@ export abstract class ClassEntity implements CalculationProvider, PresetProvider
     getDescription(key: string) : string {
         return ''
     }
+
+    getConfigurables(): {common: Set<string>, toggles: Set<string>, dials: Set<string>} {
+        return {common: new Set(), toggles: new Set(), dials:new Set()}
+    }
 }

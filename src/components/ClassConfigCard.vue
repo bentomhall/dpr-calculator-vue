@@ -14,13 +14,13 @@
             <v-card v-if="state.showCustomization" style="padding:2px">
                 <v-text-field variant="underlined" v-model="state.configurationName" label="Configuration name"></v-text-field>
                 <v-select variant="underlined" :items="state.typeOptions" v-model="state.type" label="Type" :disabled="state.typeOptions.length == 1" :error="state.typeError"></v-select>
-                <v-text-field v-if="props.showOptions.has('baseDieCount')" variant="underlined" v-model.number="state.baseDieCount" label="Base Die Count"></v-text-field>
-                <v-text-field v-if="props.showOptions.has('baseDieSize')" variant="underlined" v-model.number="state.baseDieSize" label="Base Die Size" ></v-text-field>
-                <v-text-field v-if="props.showOptions.has('procChance')" variant="underlined" v-model.number="state.procChance" label="Proc Chance"></v-text-field>
-                <v-select variant="underlined" v-if="props.showOptions.has('saveType')" :items="['DEX', 'WIS']" v-model="state.saveType" label="Cantrip Save Type"></v-select>
-                <v-select variant="underlined" v-if="props.showOptions.has('weaponType')" :items="state.weaponOptions" v-model="state.weaponType" label="Weapon Type"></v-select>
-                <v-text-field v-if="props.showOptions.has('advantage')" variant="underlined" v-model.number="state.advantage" label="Advantage (decimal)"></v-text-field>
-                <v-text-field v-if="props.showOptions.has('disadvantage')" variant="underlined" v-model.number="state.disadvantage" label="Disadvantage (decimal)"></v-text-field>
+                <v-text-field v-if="common.has('baseDieCount')" variant="underlined" v-model.number="state.baseDieCount" label="Base Die Count"></v-text-field>
+                <v-text-field v-if="common.has('baseDieSize')" variant="underlined" v-model.number="state.baseDieSize" label="Base Die Size" ></v-text-field>
+                <v-text-field v-if="common.has('procChance')" variant="underlined" v-model.number="state.procChance" label="Proc Chance"></v-text-field>
+                <v-select variant="underlined" v-if="common.has('saveType')" :items="['DEX', 'WIS']" v-model="state.saveType" label="Cantrip Save Type"></v-select>
+                <v-select variant="underlined" v-if="common.has('weaponType')" :items="state.weaponOptions" v-model="state.weaponType" label="Weapon Type"></v-select>
+                <v-text-field v-if="common.has('advantage')" variant="underlined" v-model.number="state.advantage" label="Advantage (decimal)"></v-text-field>
+                <v-text-field v-if="common.has('disadvantage')" variant="underlined" v-model.number="state.disadvantage" label="Disadvantage (decimal)"></v-text-field>
                 <v-switch v-for="[tKey, tValue] in Object.entries(state.toggles)" :key="tKey" :label="getLabelForVarying(tKey)" v-model="state.toggles[tKey]"></v-switch>
                 <v-text-field variant="underlined" v-for="[dKey, dValue] in Object.entries(state.dials)" :key="dKey" :label="getLabelForVarying(dKey)" v-model.number="state.dials[dKey]"></v-text-field>
                 <v-btn @click="save" variant="outlined" style="width:100%">Apply</v-btn>
@@ -40,10 +40,7 @@ import { WeaponDie } from '../model/utility/features';
     const props = defineProps<{
         title: string, 
         presets: Preset[],
-        baseObject: ClassEntity, 
-        showOptions: Set<string>
-        toggles: string[],
-        dials: string[]
+        baseObject: ClassEntity,
     }>()
 
     const emits = defineEmits<{
@@ -54,6 +51,7 @@ import { WeaponDie } from '../model/utility/features';
         let description = props.baseObject.getDescription(key)
         return description ? description : key
     }
+    const {common, toggles, dials} = props.baseObject.getConfigurables();
     const state = reactive({
         showCustomization: false,
         configurationName: props.title,
@@ -66,8 +64,8 @@ import { WeaponDie } from '../model/utility/features';
         weaponType: WeaponDie.d8,
         advantage: 0,
         disadvantage: 0,
-        toggles: Object.fromEntries(props.toggles.map(v => [v, false])),
-        dials: Object.fromEntries(props.dials.map(v => [v, 0])),
+        toggles: Object.fromEntries(Array.from(toggles).map(v => [v, false])),
+        dials: Object.fromEntries(Array.from(dials).map(v => [v, 0])),
         weaponOptions: [
             {title: '1d4', value:WeaponDie.d4},
             {title: '2d4', value:WeaponDie.d4x2},

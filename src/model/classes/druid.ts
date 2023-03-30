@@ -24,6 +24,14 @@ class Druid extends ClassEntity {
 		}
 	}
 
+	getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+		return {
+			common:new Set(['advantage', 'disadvantage']),
+			toggles: new Set(),
+			dials: new Set()
+		}
+	}
+
 	constructor(options: ClassOptions | null, accuracyProvider: AccuracyProvider, accuracyMode: AccuracyMode) {
 		super(accuracyProvider, accuracyMode)
 		this.validTypes = ['moon']

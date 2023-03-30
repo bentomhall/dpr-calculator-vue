@@ -57,6 +57,14 @@ class Rogue extends ClassEntity implements BaselineProvider {
 		}
 	}
 
+	getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
+		return {
+			common: new Set(['baseDieSize', 'procChance', 'advantage', 'disadvantage']),
+            toggles: new Set([]),
+            dials: new Set([])
+		}
+	}
+
 	private shortbow(level: number) : DamageOutput {
 		let modifier = this.modifiers[level - 1];
 		let attackSource = new AttackSource(this.accuracyProvider, this.accuracyMode, this.options.advantage, this.options.disadvantage);
