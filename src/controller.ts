@@ -16,6 +16,7 @@ import Warlock from "./model/classes/warlock";
 import { Wizard } from "./model/classes/wizard";
 import { Bard } from "./model/classes/bard";
 import { Ranger } from "./model/classes/ranger";
+import { CustomData } from "./model/classes/custom";
 
 export interface Calculable {
     provider: CalculationProvider,
@@ -32,12 +33,16 @@ export class InputSet implements Calculable{
     public resources?: any
     public label: string
     public color: string
+    public customData?: (number|null)[]
 
     constructor(cls: ClassEntity, type: string, label: string, color: string) {
         this.provider = cls;
         this.type = type
         this.label = label
         this.color = color
+        if (cls instanceof CustomData) {
+            this.customData = (cls as CustomData).data;
+        }
     }
 }
 
@@ -59,6 +64,12 @@ export class CalculationController {
 
     public setAccuracyMode(mode: AccuracyMode) {
         this.accuracyMode = mode;
+        (this.baseline as unknown as ClassEntity).accuracyMode = mode
+    }
+
+    public setAccuracyProvider(provider: AccuracyProvider) {
+        this.accuracyProvider = provider;
+        (this.baseline as unknown as ClassEntity).accuracyProvider = provider
     }
 
     public calculate(data: Calculable[]): DataSet[]  {
@@ -107,10 +118,14 @@ export class CalculationController {
         map.set('wizard', new Wizard(null, provider, mode));
         map.set('bard', new Bard(null, provider, mode));
         map.set('ranger', new Ranger(null, provider, mode));
+        map.set('custom', new CustomData(null, provider, mode));
         return map;
     }
 
-    private calculateLevel(data: Calculable, level: number) : {raw: number | null, red: number | null, accuracy: number} {
+    private calculateLevel(data: Calculable, level: number) : {raw: number | null, red: number | null, accuracy: number | null} {
+        if (data.customData) {
+            return this.calculateCustom(data.customData[level - 1], level);
+        }
         let raw = data.provider.calculate(data.type, level)
         let red = this.baseline.calculateRED(level, this.accuracyProvider, this.accuracyMode, null);
         return {raw: raw.damage, red: raw.damage/red.damage, accuracy: raw.accuracy};

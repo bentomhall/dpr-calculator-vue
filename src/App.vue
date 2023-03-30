@@ -3,12 +3,14 @@
   import Graph from './components/Graph.vue';
   import DataTable from './components/DataTable.vue';
   import ClassConfigCard from './components/ClassConfigCard.vue'
+  import CustomCard from './components/CustomCard.vue'
   import { CalculationController, InputSet } from './controller';
   import { ClassEntity } from './model/classes/ClassEntity';
   import { AccuracyMode, Preset } from './model/utility/types';
   import Util from './model/utility/util';
   import D20AccuracyProvider from './model/utility/accuracy';
 import SummaryTooltip from './components/SummaryTooltip.vue';
+import { CustomData } from './model/classes/custom';
   const state = reactive({
     outputModes:[
       {value: 'raw', title: 'Raw DPR'},
@@ -53,6 +55,8 @@ import SummaryTooltip from './components/SummaryTooltip.vue';
       v.provider.accuracyMode = state.accuracyMode as AccuracyMode
       v.provider.accuracyProvider = state.accuracyProvider
     })
+    controller.setAccuracyMode(state.accuracyMode as AccuracyMode)
+    controller.setAccuracyProvider(state.accuracyProvider)
     state.data = controller.calculate(state.calculableItems)
   }
 
@@ -104,7 +108,7 @@ import SummaryTooltip from './components/SummaryTooltip.vue';
           title="Table Layout"
         >
           <v-list-item-action>
-            <v-switch 
+            <v-switch
               v-model.lazy="state.tableHorizontal"
               :label="state.tableHorizontal ? 'Horizontal' : 'Vertical'"
             ></v-switch>
@@ -116,7 +120,7 @@ import SummaryTooltip from './components/SummaryTooltip.vue';
           </v-list-item-action>
         </v-list-item>
         <v-list-item v-for="(item, index) in state.calculableItems" :key="index">
-          <v-chip :closable="true" @click:close="removeSelected(index)" :label="true" :style="{backgroundColor:item.color}">{{ item.label }} <SummaryTooltip :item="item.provider" location="end"></SummaryTooltip></v-chip>
+          <v-chip :closable="true" @click:close="removeSelected(index)" :label="true" :style="{backgroundColor:item.color}">{{ item.label }} <SummaryTooltip v-if="!item.customData" :item="item.provider" location="end"></SummaryTooltip></v-chip>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -195,13 +199,17 @@ import SummaryTooltip from './components/SummaryTooltip.vue';
             :base-object="state.classInstances.get('wizard')" 
             @config-selected="onSelected($event)"
           ></ClassConfigCard>
+          <CustomCard
+            :base-object="state.classInstances.get('custom') as CustomData"
+            @custom-entered="onSelected($event)"
+          ></CustomCard>
         </div>
         <v-btn @click="showConfig" style="margin-top:16px">Hide Configuration Options</v-btn>
       </div>
       <div v-else style="width:100%;padding:16px;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);background-color: #999;">
         <v-btn @click="showConfig">Show Configuration Options</v-btn>
       </div>
-      <v-card v-if="state.calculableItems.length > 0" :style="outputStyle">
+      <div v-if="state.calculableItems.length > 0" :style="outputStyle">
         <Graph
           :data="state.data"
           :mode="state.outputMode.value as 'red' | 'raw' | 'accuracy'"
@@ -212,7 +220,7 @@ import SummaryTooltip from './components/SummaryTooltip.vue';
           :mode="state.outputMode.value as 'red' | 'raw' | 'accuracy'" 
           :horizontal="state.tableHorizontal"  
         ></DataTable>
-      </v-card>
+      </div>
       <v-card v-else title="No configurations set">
 
       </v-card>

@@ -108,14 +108,28 @@
     }
 
     function getDataForElement(element: DataSet, level: number): number | string {
-        if (props.mode == 'raw') { return Util.round(element.raw[(level as number) - 1]) ?? 'N/A'}
-        else if (props.mode == 'red') { return Util.round(element.red[level as number -1]) ?? 'N/A'}
-        else { return Util.round(100*element.accuracy[level as number - 1]) ?? 'N/A'}
+        let datum: number | null = null;
+        switch(props.mode) {
+            case 'raw':
+                datum = element.raw[(level as number) - 1]
+                break;
+            case 'red':
+                datum = element.red[(level as number) - 1]
+                break;
+            case 'accuracy':
+                datum = 100 * element.accuracy[(level as number) - 1]
+                break;
+        }
+        if (datum) {
+            return Util.round(datum, 2);
+        } else {
+            return 'N/A'
+        }
     }
 
     function getAverage(element: DataSet) : number {
-        if (props.mode == 'raw') { return Util.round(Util.average(element.raw))}
-        else if (props.mode == 'red') { return Util.round(Util.average(element.red))}
-        else { return Util.round(100*Util.average(element.accuracy))}
+        if (props.mode == 'raw') { return Util.round(Util.average(element.raw.filter(x=> x != null)))}
+        else if (props.mode == 'red') { return Util.round(Util.average(element.red.filter(x => x!= null)))}
+        else { return Util.round(100*Util.average(element.accuracy.filter(x => x != null)))}
     }
 </script>
