@@ -10,8 +10,8 @@ class Fighter extends ClassEntity {
 	public readonly name = 'Fighter';
 	private baseModifiers = [3, 3, 3, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
 	private featAt4Modifiers = [3, 3, 3, 3, 3, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
-	private options: FighterOptions
-	private resources: {rests: number, rounds: number}
+	protected declare options: FighterOptions
+	protected declare resources: {rests: number, rounds: number}
 
 	presets(provider: AccuracyProvider, mode: AccuracyMode): Preset[] {
 		// return [
@@ -53,7 +53,7 @@ class Fighter extends ClassEntity {
 			case 'rounds':
 				return 'Combat rounds per SR'
 			default:
-				return ''
+				return super.getDescription(key)
 		}
 	}
 
@@ -61,7 +61,7 @@ class Fighter extends ClassEntity {
 		super(provider, mode)
 		this.validTypes = ['gs', 'snb', 'pam']
 		this.options = {
-			weaponDie: options?.baseDieSize ?? Dice.d8,
+			baseDieSize: options?.baseDieSize ?? Dice.d8,
 			weaponType: options?.weaponType ?? WeaponDie.d8,
 			advantage: options?.advantage ?? 0,
 			disadvantage: options?.disadvantage ?? 0,
@@ -81,7 +81,7 @@ class Fighter extends ClassEntity {
 
 	configure(options: ClassOptions): Fighter {
 		this.options = {
-			weaponDie: options.baseDieSize ?? Dice.d8,
+			baseDieSize: options.baseDieSize ?? Dice.d8,
 			weaponType: options.weaponType ?? WeaponDie.d8,
 			advantage: options.advantage ?? 0,
 			disadvantage: options.disadvantage ?? 0,
@@ -151,7 +151,7 @@ class Fighter extends ClassEntity {
 		let gwfs = FightingStyleHandler.greatWeapon(options.weaponType);
 		let accuracyMod = options.gWMStart && level >= options.gWMStart ? modifier + gwm.accuracy : modifier;
 		let extraDamage = options.gWMStart && level >= options.gWMStart ? gwm.flatDamage + modifier + gwfs.flatDamage : gwfs.flatDamage;
-		let primaryOpt = new AttackDamageOptions(options.weaponDie, extraDamage, 0, 0, extraCrit, true, true);
+		let primaryOpt = new AttackDamageOptions(options.baseDieSize, extraDamage, 0, 0, extraCrit, true, true);
 		let primary =  source.weaponAttacks(level, attacks, accuracyMod, primaryOpt);
 		let pamAttack: AttackModifier | null = null;
 		if (options.pAMStart && level >= options.pAMStart) {
@@ -167,7 +167,7 @@ class Fighter extends ClassEntity {
 		let modifier = this.baseModifiers[level - 1];
 		let extra = FightingStyleHandler.dueling().flatDamage;
 		let extraCrit = this.extraCrit(level);
-		let primaryOpt = new AttackDamageOptions(options.weaponDie, extra, 0, 0, extraCrit, true, true);
+		let primaryOpt = new AttackDamageOptions(options.baseDieSize, extra, 0, 0, extraCrit, true, true);
 		let primary = source.weaponAttacks(level, attacks, modifier, primaryOpt);
 		return {damage: (1 + actionSurgeRate)*primary.damage, accuracy: primary.accuracy};
 	}
@@ -178,7 +178,7 @@ class Fighter extends ClassEntity {
 		let extra = FightingStyleHandler.greatWeapon(options.weaponType).flatDamage;
 		let extraPam = FightingStyleHandler.greatWeapon(WeaponDie.d4).flatDamage;
 		let extraCrit = this.extraCrit(level);
-		let primaryOpt = new AttackDamageOptions(options.weaponDie, extra, 0, 0, extraCrit, true, true);
+		let primaryOpt = new AttackDamageOptions(options.baseDieSize, extra, 0, 0, extraCrit, true, true);
 		let pamOpt = new AttackDamageOptions(Dice.d4, extraPam, 0, 0, extraCrit, true, true);
 		let primary = source.weaponAttacks(level, attacks, modifier, primaryOpt);
 		let pam = Feat.poleArmMaster(level, modifier, pamOpt, source);
@@ -189,7 +189,7 @@ class Fighter extends ClassEntity {
 export default Fighter;
 
 type FighterOptions = {
-	weaponDie: number;
+	baseDieSize: number;
 	weaponType: WeaponDie
 	gWMStart?: number | null;
 	pAMStart?: number | null;

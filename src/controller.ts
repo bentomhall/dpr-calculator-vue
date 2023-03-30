@@ -43,6 +43,7 @@ export class InputSet implements Calculable{
 
 export interface CalculationProvider {
     calculate(type: string, level: number): DamageOutput
+    getSummary(): string[]
 }
 
 export class CalculationController {

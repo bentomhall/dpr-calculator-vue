@@ -10,12 +10,12 @@ export class Paladin extends ClassEntity {
   public readonly name: string = 'Paladin';
   private modifiers = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
   private featModifiers = [3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-  private options: PaladinOptions
-  private resources: PaladinResources
+  protected declare options: PaladinOptions
+  protected declare resources: PaladinResources
 
   public calculate(type: string, level: number): DamageOutput {
     let source = new AttackSource(this.accuracyProvider, this.accuracyMode, this.options.advantage, this.options.disadvantage);
-    let smiteDice = this.smite(level, this.resources, this.resources.totalRounds, this.options.poleArmMaster && level >=4);
+    let smiteDice = this.smite(level, this.resources, this.resources.rounds, this.options.poleArmMaster && level >=4);
     if (this.options.poleArmMaster) {
       return this.poleArmMaster(level, source, this.options, smiteDice);
     }
@@ -28,7 +28,7 @@ export class Paladin extends ClassEntity {
   getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
       return {
         common: new Set(['advantage', 'disadvantage', 'baseDieSize']), 
-        toggles: new Set(['oncePerTurn', 'highestSlotFirst', 'greatWeaponStyle', 'greatWeaponMaster', 'pam']), 
+        toggles: new Set(['oncePerTurn', 'highestSlotFirst', 'greatWeaponStyle', 'greatWeaponMaster', 'poleArmMaster']), 
         dials:new Set(['rounds'])
       }
   }
@@ -51,10 +51,10 @@ export class Paladin extends ClassEntity {
           return 'Limit smites to once per turn'
         case 'highestSlotFirst':
           return 'Use highest slot for smiting first'
-        case 'pam':
+        case 'poleArmMaster':
           return 'Take PAM at 4'
         default:
-          return ''
+          return super.getDescription(key)
       }
   }
 
@@ -63,34 +63,34 @@ export class Paladin extends ClassEntity {
     this.validTypes = ['gs', 'gwm', 'longsword']
     this.options = {
       weaponType: options?.weaponType ?? WeaponDie.d8,
-      baseDie: options?.baseDieSize ?? Dice.d8,
+      baseDieSize: options?.baseDieSize ?? Dice.d8,
       advantage: options?.advantage ?? 0,
       disadvantage: options?.disadvantage ?? 0,
       greatWeaponStyle: options?.toggles?.get('greatWeaponStyle') ?? false,
       greatWeaponMaster: options?.toggles?.get('greatWeaponMaster') ?? false,
-      poleArmMaster: options?.toggles?.get('pam') ?? false
+      poleArmMaster: options?.toggles?.get('poleArmMaster') ?? false
     }
     this.resources = {
-      totalRounds: options?.dials?.get('rounds') ?? 10,
+      rounds: options?.dials?.get('rounds') ?? 10,
       oncePerTurn: options?.toggles?.get('oncePerTurn') ?? false,
-      highestFirst: options?.toggles?.get('highestSlotFirst') ?? false
+      highestSlotFirst: options?.toggles?.get('highestSlotFirst') ?? false
     }
   }
 
   configure(options: ClassOptions): Paladin {
     this.options = {
       weaponType: options?.weaponType ?? WeaponDie.d8,
-      baseDie: options?.baseDieSize ?? Dice.d8,
+      baseDieSize: options?.baseDieSize ?? Dice.d8,
       advantage: options?.advantage ?? 0,
       disadvantage: options?.disadvantage ?? 0,
       greatWeaponStyle: options?.toggles?.get('greatWeaponStyle') ?? false,
       greatWeaponMaster: options?.toggles?.get('greatWeaponMaster') ?? false,
-      poleArmMaster: options?.toggles?.get('polearmMaster') ?? false
+      poleArmMaster: options?.toggles?.get('poleArmMaster') ?? false
     }
     this.resources = {
-      totalRounds: options?.dials?.get('rounds') ?? 10,
+      rounds: options?.dials?.get('rounds') ?? 10,
       oncePerTurn: options?.toggles?.get('oncePerTurn') ?? false,
-      highestFirst: options?.toggles?.get('highestSlotFirst') ?? false
+      highestSlotFirst: options?.toggles?.get('highestSlotFirst') ?? false
     }
     return this
   }
@@ -120,7 +120,7 @@ export class Paladin extends ClassEntity {
     let extraCritDice = level < 11 ? smiteDice.crit*Dice.d8 : (2+smiteDice.hit)*Dice.d8;
     let pam: AttackModifier = {flatDamage: 0, accuracy: 0};
     if (level >= 4) {pam = Feat.poleArmMaster(level, modifier, new AttackDamageOptions(Dice.d4, extra, extraDice, extraCritDice, 0, true, true), source)};
-    let primary = source.weaponAttacks(level, level >= 5 ? 2 : 1, modifier, new AttackDamageOptions(options.baseDie, extra, level >= 11 ? Dice.d8: 0, 0, 0, true, true));
+    let primary = source.weaponAttacks(level, level >= 5 ? 2 : 1, modifier, new AttackDamageOptions(options.baseDieSize, extra, level >= 11 ? Dice.d8: 0, 0, 0, true, true));
     return {damage: primary.damage + pam.flatDamage, accuracy: primary.accuracy}
   }
 
@@ -129,7 +129,7 @@ export class Paladin extends ClassEntity {
     let extra = level > 1 ? (options.greatWeaponStyle ? FightingStyleHandler.greatWeapon(options.weaponType).flatDamage : FightingStyleHandler.dueling().flatDamage) : 0;
     let extraDice = level < 11 ? smiteDice.hit*Dice.d8 : (1 + smiteDice.hit)*Dice.d8;
     let extraCritDice = level < 11 ? smiteDice.crit*Dice.d8 : (2+smiteDice.hit)*Dice.d8; 
-    return source.weaponAttacks(level, level < 5 ? 1 : 2, modifier, new AttackDamageOptions(options.baseDie, extra, extraDice, extraCritDice));
+    return source.weaponAttacks(level, level < 5 ? 1 : 2, modifier, new AttackDamageOptions(options.baseDieSize, extra, extraDice, extraCritDice));
   }
 
   private greatWeaponMaster(level: number, source: AttackSource, options: PaladinOptions, smiteDice?: {hit: number, crit:number}): DamageOutput {
@@ -141,7 +141,7 @@ export class Paladin extends ClassEntity {
     let extra = options.greatWeaponStyle && level > 1 ? gwfs.flatDamage + damageModifier : damageModifier;
     let extraDice = level < 11 ? smiteDice.hit*Dice.d8 : (1 + smiteDice.hit)*Dice.d8;
     let extraCritDice = level < 11 ? smiteDice.crit*Dice.d8 : (2+smiteDice.hit)*Dice.d8;
-    return source.weaponAttacks(level, level < 5 ? 1 : 2, attackModifier, new AttackDamageOptions(options.baseDie, extra, extraDice, extraCritDice, 0, true, false));
+    return source.weaponAttacks(level, level < 5 ? 1 : 2, attackModifier, new AttackDamageOptions(options.baseDieSize, extra, extraDice, extraCritDice, 0, true, false));
   }
 
   private smite(level: number, resources: PaladinResources, totalRounds: number, getsBonusAttack: boolean = false): {hit: number, crit:number} {
@@ -149,7 +149,7 @@ export class Paladin extends ClassEntity {
     if (getsBonusAttack) { totalAttacks += totalRounds; }
     let slots = this.getSlots(level);
     if (slots.length == 0) { return {hit: 0, crit: 0}; }
-    let indexes = this.slotsToIndexes(slots, resources.highestFirst, resources.oncePerTurn ? totalRounds : totalAttacks);
+    let indexes = this.slotsToIndexes(slots, resources.highestSlotFirst, resources.oncePerTurn ? totalRounds : totalAttacks);
     let regularDice = indexes.map(i => this.getSmiteDice(i));
     let critDice = regularDice.map(j => 2*j);
     return {hit: Util.sum(regularDice)/totalAttacks, crit: Util.sum(critDice)/totalAttacks};
@@ -205,7 +205,7 @@ export class Paladin extends ClassEntity {
 type PaladinOptions = {
   advantage: number,
   disadvantage: number,
-  baseDie: number,
+  baseDieSize: number,
   greatWeaponStyle: boolean,
   weaponType: WeaponDie,
   greatWeaponMaster?: boolean,
@@ -214,6 +214,6 @@ type PaladinOptions = {
 
 type PaladinResources = {
   oncePerTurn: boolean,
-  highestFirst: boolean,
-  totalRounds: number
+  highestSlotFirst: boolean,
+  rounds: number
 }

@@ -8,6 +8,7 @@
   import { AccuracyMode, Preset } from './model/utility/types';
   import Util from './model/utility/util';
   import D20AccuracyProvider from './model/utility/accuracy';
+import SummaryTooltip from './components/SummaryTooltip.vue';
   const state = reactive({
     outputModes:[
       {value: 'raw', title: 'Raw DPR'},
@@ -115,7 +116,7 @@
           </v-list-item-action>
         </v-list-item>
         <v-list-item v-for="(item, index) in state.calculableItems" :key="index">
-          <v-chip :closable="true" @click:close="removeSelected(index)" :label="true" :style="{backgroundColor:item.color}">{{ item.label }}</v-chip>
+          <v-chip :closable="true" @click:close="removeSelected(index)" :label="true" :style="{backgroundColor:item.color}">{{ item.label }} <SummaryTooltip :item="item.provider" location="end"></SummaryTooltip></v-chip>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

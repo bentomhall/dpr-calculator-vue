@@ -8,8 +8,8 @@ import { ClassOptions } from "./ExtrasFactory";
 class Monk extends ClassEntity {
 	public readonly name = 'Monk';
 	modifiers = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-	private options: MonkOptions
-	private resources: MonkResources
+	protected declare options: MonkOptions
+	protected declare resources: MonkResources
 	
 	presets(provider: AccuracyProvider, mode: AccuracyMode): Preset[] {
 		// return [
@@ -55,8 +55,10 @@ class Monk extends ClassEntity {
 				return 'Short rests per long rest'
 			case 'rounds':
 				return 'Combat rounds per short rest'
+			case 'unarmed':
+				return 'Only unarmed strikes'
 			default:
-				return ''
+				return super.getDescription(key)
 		}
 	}
 

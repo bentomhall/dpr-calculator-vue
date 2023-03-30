@@ -8,8 +8,8 @@ import { ClassOptions } from "./ExtrasFactory";
 
 export class Barbarian extends ClassEntity{
 	public readonly name: string = 'Barbarian';
-	private options: BarbarianOptions
-	private resources: BarbarianResources
+	protected declare options: BarbarianOptions
+	protected declare resources: BarbarianResources
 	presets(accuracyProvider: AccuracyProvider, mode: AccuracyMode): Preset[] {
 		// return [
 		// 	['barbarian_no_rage', {name: 'Barbarian (no rage or reckless)', obj: this, resources: {useRage: false, roundsPerLR: 1, recklessPercent: 0, combats: 1}, type: 'no-sub', options: {weaponDieSize: Dice.d12, gWMProcRate: 0}}],
@@ -30,15 +30,15 @@ export class Barbarian extends ClassEntity{
 	constructor(options: ClassOptions, accuracyProvider: AccuracyProvider, accuracyMode: AccuracyMode) {
 		super(accuracyProvider, accuracyMode)
 		this.options = {
-			weaponDieSize: options?.baseDieSize ?? Dice.d12,
-			weaponDieNumber: options?.baseDieCount ?? 1,
+			baseDieSize: options?.baseDieSize ?? Dice.d12,
+			baseDieCount: options?.baseDieCount ?? 1,
 			gWMProcRate: options?.dials?.get('gWMProcRate') ?? 0,
 			useGWM: options?.toggles?.get('useGWM') ?? false
 		}
 		this.resources = {
 			useRage: options?.toggles?.get('useRage') ?? false,
 			roundsPerLR: options?.dials?.get('roundsPerLR') ?? 1,
-			recklessPercent: options?.dials?.get('recklessPercent') ?? 0,
+			reckless: options?.dials?.get('recklessPercent') ?? 0,
 			combats: options?.dials?.get('combats') ?? 1
 		}
 		this.validTypes = ['frenzy', 'expt', 'no-sub']
@@ -65,21 +65,21 @@ export class Barbarian extends ClassEntity{
 			case 'gWMProcRate':
 				return 'Proc rate (decimal) for GWM (if selected)'
 			default:
-				return ''
+				return super.getDescription(key)
 		}
 	}
 
 	configure(options: ClassOptions): ClassEntity {
 		this.options = {
-			weaponDieSize: options.baseDieSize ?? Dice.d12,
-			weaponDieNumber: options.baseDieCount ?? 1,
+			baseDieSize: options.baseDieSize ?? Dice.d12,
+			baseDieCount: options.baseDieCount ?? 1,
 			gWMProcRate: options.dials?.get('gWMProcRate') ?? 0,
 			useGWM: options.toggles?.get('useGWM') ?? false
 		}
 		this.resources = {
 			useRage: options.toggles?.get('useRage') ?? false,
 			roundsPerLR: Math.max(options.dials?.get('roundsPerLR') ?? 1, 1),
-			recklessPercent: options.dials?.get('reckless') ?? 0,
+			reckless: options.dials?.get('reckless') ?? 0,
 			combats: Math.max(options.dials?.get('combats') ?? 1, 1)
 		}
 		return this
@@ -90,9 +90,9 @@ export class Barbarian extends ClassEntity{
 		let {hit, crit} = this.accuracyProvider.vsAC(level, this.accuracyMode, modifier, 0, 'flat');
 		let advantage = this.accuracyProvider.vsAC(level, this.accuracyMode, modifier, 0, 'advantage');
 		let fractionRaging = this.resources.useRage ? this.percentRaging(level, this.resources.combats) : 0
-		let weaponDice = (this.options.weaponDieSize ?? Dice.d12);
-		let numberOfDice = this.options.weaponDieNumber ?? 1;
-		let reckless = level > 1 ? this.resources.recklessPercent : 0;
+		let weaponDice = (this.options.baseDieSize ?? Dice.d12);
+		let numberOfDice = this.options.baseDieCount ?? 1;
+		let reckless = level > 1 ? this.resources.reckless : 0;
 		let hitDamage = numberOfDice*weaponDice + modifier + fractionRaging*this.rageBonus(level);
 		let critDamage = this.critDamage(level, weaponDice, numberOfDice) + modifier + fractionRaging*this.rageBonus(level);
 		let total = 0;
@@ -184,13 +184,13 @@ export class Barbarian extends ClassEntity{
 type BarbarianResources = {
 	useRage: boolean,
 	roundsPerLR: number,
-	recklessPercent: number,
+	reckless: number,
     combats: number
 }
 
 type BarbarianOptions = {
-	weaponDieSize: number,
-	weaponDieNumber: number,
+	baseDieSize: number,
+	baseDieCount: number,
 	gWMProcRate: number,
 	useGWM: boolean
 }

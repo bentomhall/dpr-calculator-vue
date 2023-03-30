@@ -7,20 +7,20 @@ import { ClassOptions } from "./ExtrasFactory";
 export class Sorcerer extends ClassEntity {
   public readonly name: string = 'Sorcerer';
   private readonly modifiers: number[] = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-  private options: SorcererOptions
-  private resources: SorcererResources
+  protected declare options: SorcererOptions
+  protected declare resources: SorcererResources
 
   constructor(options: ClassOptions|null, provider: AccuracyProvider, mode: AccuracyMode) {
     super(provider, mode)
     this.options = {
       useQuicken: options?.toggles?.get('useQuicken') ?? false,
       cantripDie: options?.baseDieSize ?? Dice.d10,
-      matchingElementalAffinity: options?.toggles?.get('hasMatchingElementalAffinity') ?? false,
+      hasMatchingElementalAffinity: options?.toggles?.get('hasMatchingElementalAffinity') ?? false,
       advantage: options?.advantage ?? 0,
       disadvantage: options?.disadvantage ?? 0
     }
     this.resources = {
-      roundsPerDay: options?.dials?.get('rounds') ?? 1
+      rounds: options?.dials?.get('rounds') ?? 1
     }
     if (options) {
       this.modifiers = options.modifiers.normal
@@ -32,12 +32,12 @@ export class Sorcerer extends ClassEntity {
     this.options = {
       useQuicken: options?.toggles?.get('useQuicken') ?? false,
       cantripDie: options?.baseDieSize ?? Dice.d10,
-      matchingElementalAffinity: options?.toggles?.get('hasMatchingElementalAffinity') ?? false,
+      hasMatchingElementalAffinity: options?.toggles?.get('hasMatchingElementalAffinity') ?? false,
       advantage: options?.advantage ?? 0,
       disadvantage: options?.disadvantage ?? 0
     }
     this.resources = {
-      roundsPerDay: options?.dials?.get('rounds') ?? 1
+      rounds: options?.dials?.get('rounds') ?? 1
     }
     return this
   }
@@ -53,7 +53,7 @@ export class Sorcerer extends ClassEntity {
         case 'rounds':
           return 'Combat rounds per LR'
         default:
-          return ''
+          return super.getDescription(key)
       }
   }
 
@@ -68,15 +68,15 @@ export class Sorcerer extends ClassEntity {
   public calculate(type: string, level: number): DamageOutput {
     let modifier = this.modifiers[level - 1];
     let source = new AttackSource(this.accuracyProvider, this.accuracyMode, this.options.advantage, this.options.disadvantage);
-    let extra = this.options.matchingElementalAffinity && level >= 6 ? modifier : 0;
+    let extra = this.options.hasMatchingElementalAffinity && level >= 6 ? modifier : 0;
 		let opt = AttackDamageOptions.regularCantrip(level, this.options.cantripDie, extra, 0);
     let regular = source.attackCantrip(level, 1, modifier, opt);
     let quicken = source.attackCantrip(level, 2, modifier, opt);
     if (type == 'cantrip-only') {
       let damage = regular.damage;
       if (this.options.useQuicken) {
-        let quickenRounds = level >= 3 ? Math.min(Math.floor(level/2), this.resources.roundsPerDay) : 0;
-        damage = (regular.damage * (this.resources.roundsPerDay - quickenRounds) + quickenRounds*quicken.damage)/this.resources.roundsPerDay;
+        let quickenRounds = level >= 3 ? Math.min(Math.floor(level/2), this.resources.rounds) : 0;
+        damage = (regular.damage * (this.resources.rounds - quickenRounds) + quickenRounds*quicken.damage)/this.resources.rounds;
       } 
       return {damage, accuracy: regular.accuracy}
     }
@@ -98,11 +98,11 @@ export class Sorcerer extends ClassEntity {
 type SorcererOptions = {
     useQuicken: boolean;
     cantripDie: number;
-    matchingElementalAffinity: boolean;
+    hasMatchingElementalAffinity: boolean;
     advantage: number;
     disadvantage: number;
 }
 
 type SorcererResources = {
-    roundsPerDay: number;
+    rounds: number;
 }

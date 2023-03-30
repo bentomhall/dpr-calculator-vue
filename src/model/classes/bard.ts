@@ -10,7 +10,7 @@ export class Bard extends ClassEntity {
     public readonly name: string = 'Bard';
     private chaModifiers: number[] = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
     private dexModifiers: number[] = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
-    private options: BardOptions
+    protected declare options: BardOptions
     constructor(options: ClassOptions|null, provider: AccuracyProvider, mode: AccuracyMode) {
         super(provider, mode)
         if (options) {
@@ -18,7 +18,7 @@ export class Bard extends ClassEntity {
                 advantage: options.advantage,
                 disadvantage: options.disadvantage,
                 saveType: options.saveType,
-                baseDie: options.baseDieSize
+                baseDieSize: options.baseDieSize
             }
             this.chaModifiers = options.modifiers.normal
             this.dexModifiers = options.modifiers.normal
@@ -27,7 +27,7 @@ export class Bard extends ClassEntity {
                 advantage: 0,
                 disadvantage: 0,
                 saveType: 'WIS',
-                baseDie: Dice.d4
+                baseDieSize: Dice.d4
             }
         }
         this.validTypes = ['cantrip-only', 'sword']
@@ -37,7 +37,7 @@ export class Bard extends ClassEntity {
             advantage: options.advantage,
             disadvantage: options.disadvantage,
             saveType: options.saveType,
-            baseDie: options.baseDieSize
+            baseDieSize: options.baseDieSize
         }
         this.chaModifiers = options.modifiers.normal
         this.dexModifiers = options.modifiers.normal
@@ -50,7 +50,7 @@ export class Bard extends ClassEntity {
             case 'sword':
                 return 'Uses only rapier'
             default:
-                return ''
+                return super.getDescription(key)
         }
     }
     calculate(type: string, level: number): DamageOutput {
@@ -59,9 +59,9 @@ export class Bard extends ClassEntity {
         let disadvantage = type == 'sword' ? this.options.disadvantage : 0
         let attackSource = new AttackSource(this.accuracyProvider, this.accuracyMode, advantage, disadvantage)
         if (type == 'cantrip-only') {
-            return attackSource.saveCantrip(level, this.options.saveType, this.options.baseDie, 0, modifier)
+            return attackSource.saveCantrip(level, this.options.saveType, this.options.baseDieSize, 0, modifier)
         } else {
-            return attackSource.weaponAttacks(level, 1, modifier, new AttackDamageOptions(this.options.baseDie, 0, 0, 0, 0, true, true))
+            return attackSource.weaponAttacks(level, 1, modifier, new AttackDamageOptions(this.options.baseDieSize, 0, 0, 0, 0, true, true))
         }
     }
 
@@ -85,5 +85,5 @@ type BardOptions = {
     advantage: number,
     disadvantage: number,
     saveType: SaveType,
-    baseDie: number
+    baseDieSize: number
 }

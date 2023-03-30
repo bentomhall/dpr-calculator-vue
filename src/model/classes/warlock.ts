@@ -8,8 +8,8 @@ import { ClassOptions } from "./ExtrasFactory";
 class Warlock extends ClassEntity {
 	public readonly name = 'Warlock';
 	modifiers = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-	private options: WarlockOptions
-	private resources: WarlockResources
+	protected declare options: WarlockOptions
+	protected declare resources: WarlockResources
 
 	presets(provider: AccuracyProvider, mode: AccuracyMode): Preset[] {
 		// return [
@@ -73,7 +73,7 @@ class Warlock extends ClassEntity {
 			case 'duration':
 				return 'Hex duration/cast (rounds)'
 			default:
-				return ''
+				return super.getDescription(key)
 		}
 	}
 	

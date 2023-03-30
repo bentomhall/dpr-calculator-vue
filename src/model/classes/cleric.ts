@@ -8,7 +8,7 @@ class Cleric extends ClassEntity {
 	public readonly name = 'Cleric';
 	private wisModifiers = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
 	private strModifiers = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5];
-	private options: ClericOptions
+	protected declare options: ClericOptions
 
 	public presets(provider: AccuracyProvider, mode: AccuracyMode): Preset[] {
 		// return [			
@@ -28,8 +28,8 @@ class Cleric extends ClassEntity {
 		super(provider, mode)
 		this.options = {
 			cantripDie: options?.baseDieSize ?? Dice.d8,
-			cantripSave: options?.saveType ?? 'DEX',
-			proc: options?.procChance ?? 0,
+			saveType: options?.saveType ?? 'DEX',
+			procChance: options?.procChance ?? 0,
 			uptime: options?.dials?.get('uptime') ?? 0
 		}
 		this.validTypes = ['ps', 'bs', 'ps-bb']
@@ -38,8 +38,8 @@ class Cleric extends ClassEntity {
 	configure(options: ClassOptions): Cleric {
 		this.options = {
 			cantripDie: options.baseDieSize,
-			cantripSave: options.saveType,
-			proc: options.procChance,
+			saveType: options.saveType,
+			procChance: options.procChance,
 			uptime: options.dials?.get('uptime') ?? 0
 		}
 		this.wisModifiers = options.modifiers.normal
@@ -58,7 +58,7 @@ class Cleric extends ClassEntity {
 			case 'uptime':
 				return 'Spiritual Weapon uptime (decimal)'
 			default:
-				return ''
+				return super.getDescription(key)
 		}
 	}
 
@@ -73,9 +73,9 @@ class Cleric extends ClassEntity {
 	public calculate(type: string, level: number): DamageOutput {
 		let sfDamage = {damage: 0, accuracy: 0};
 		if (type == 'ps-bb') {
-			sfDamage = this.boomingBlade(level, this.options.proc, this.strModifiers[level -1], Dice.d8, this.accuracyProvider, this.accuracyMode);
+			sfDamage = this.boomingBlade(level, this.options.procChance, this.strModifiers[level -1], Dice.d8, this.accuracyProvider, this.accuracyMode);
 		} else {
-			sfDamage = this.regularCantrip(type, level, this.accuracyProvider, this.accuracyMode, this.options.cantripDie, this.options.cantripSave);
+			sfDamage = this.regularCantrip(type, level, this.accuracyProvider, this.accuracyMode, this.options.cantripDie, this.options.saveType);
 		}
 		if (this.options.uptime) {
 			let swDamage = this.sacredWeapon(this.options.uptime, level, this.accuracyProvider, this.accuracyMode);
@@ -110,9 +110,9 @@ class Cleric extends ClassEntity {
 export default Cleric;
 
 type ClericOptions = {
-	cantripSave: SaveType;
+	saveType: SaveType;
 	cantripDie: number;
 	uptime: number;
-	proc: number;
+	procChance: number;
 }
 

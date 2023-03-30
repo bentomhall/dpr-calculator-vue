@@ -32,9 +32,9 @@
 
 <script setup lang="ts">
     import { reactive, computed } from 'vue';
-import { ClassEntity } from '../model/classes/ClassEntity';
-import { ClassOptions } from '../model/classes/ExtrasFactory';
-import { WeaponDie } from '../model/utility/features';
+    import { ClassEntity } from '../model/classes/ClassEntity';
+    import { ClassOptions } from '../model/classes/ExtrasFactory';
+    import { WeaponDie } from '../model/utility/features';
     import { Preset, SaveType } from '../model/utility/types';
 
     const props = defineProps<{

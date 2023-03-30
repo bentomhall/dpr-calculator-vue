@@ -7,7 +7,7 @@ import { ClassOptions } from "./ExtrasFactory";
 class Druid extends ClassEntity {
 	public readonly name = 'Druid';
 	private modifiers = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-	private options: DruidOptions
+	protected declare options: DruidOptions
 
 	presets(accuracyProvider: AccuracyProvider, accuracyMode: AccuracyMode): Preset[] {
 		return [
@@ -20,7 +20,7 @@ class Druid extends ClassEntity {
 			case 'moon':
 				return 'Circle of the Moon'
 			default:
-				return ''
+				return super.getDescription(key)
 		}
 	}
 

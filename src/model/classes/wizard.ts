@@ -10,7 +10,7 @@ export class Wizard extends ClassEntity {
     public readonly name: string = 'Wizard';
     private modifiers: number[] = [3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
 	private dexModifier: number[] = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5];
-	private options: WizardOptions
+	protected declare options: WizardOptions
 	constructor(options: ClassOptions|null, provider: AccuracyProvider, mode: AccuracyMode) {
 		super(provider, mode)
 		this.validTypes = ['cantrip-only', 'bladesinger']
@@ -19,7 +19,7 @@ export class Wizard extends ClassEntity {
 			disadvantage: options?.disadvantage ?? 0,
 			cantripDie: options?.baseDieSize ?? Dice.d10,
 			preferWeapons: options?.toggles?.get('preferWeapons') ?? false,
-			proc: options?.procChance,
+			procChance: options?.procChance,
 			empoweredEvocation: options?.toggles?.get('empoweredEvocation') ?? false
 		}
 		
@@ -35,7 +35,7 @@ export class Wizard extends ClassEntity {
 			disadvantage: options.disadvantage ?? 0,
 			cantripDie: options.baseDieSize ?? Dice.d10,
 			preferWeapons: options.toggles?.get('preferWeapons') ?? false,
-			proc: options.procChance,
+			procChance: options.procChance,
 			empoweredEvocation: options.toggles?.get('empoweredEvocation') ?? false
 		}
 		
@@ -54,8 +54,10 @@ export class Wizard extends ClassEntity {
 				return 'Focus on weapons, not spells (BS)'
 			case 'empoweredEvocation':
 				return 'Has Empowered Evocation'
+			case 'procChance':
+				return 'Booming Blade proc chance'
 			default:
-				return ''
+				return super.getDescription(key)
 		}
 	}
 
@@ -98,11 +100,11 @@ export class Wizard extends ClassEntity {
 			let attackOptions = AttackDamageOptions.regularCantrip(level, options.cantripDie, 0, 0);
 			return attackProvider.attackCantrip(level, options?.cantripDie ?? Dice.d10, spellMod, attackOptions);
 		} else if (level < 6) {
-			return attackProvider.boomingBlade(level, options.proc, weaponMod);
+			return attackProvider.boomingBlade(level, options.procChance, weaponMod);
 		} else {
 			let attackOptions = new AttackDamageOptions(Dice.d8, 0, 0, 0, 0, true, true);
 			let weaponDamage = attackProvider.weaponAttacks(level, 1, weaponMod, attackOptions);
-			let spellDamage = attackProvider.boomingBlade(level, options.proc, weaponMod);
+			let spellDamage = attackProvider.boomingBlade(level, options.procChance, weaponMod);
 			let damage = weaponDamage.damage + spellDamage.damage;
 			let accuracy = Util.average([weaponDamage.accuracy, spellDamage.accuracy]);
 			return {damage, accuracy}
@@ -122,7 +124,7 @@ type WizardOptions = {
     cantripDie: number,
     empoweredEvocation: boolean,
 	preferWeapons: boolean,
-	proc: number,
+	procChance: number,
 	advantage: number,
 	disadvantage: number
 }

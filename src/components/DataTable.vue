@@ -53,7 +53,9 @@
                     v-for="set in props.data"
                     :key="set.name"
                 >
-                    <td :style="state.style.element"><div style="display: inline-block">{{set.name}}</div> <div :style="getSwatchStyle(set)"></div></td>
+                    <td :style="state.style.element">
+                        <div style="display: inline-block">{{set.name}}</div> <div :style="getSwatchStyle(set)"></div>
+                    </td>
                     <td v-for="level in state.levels" :key="level" :style="state.style.element">{{ getDataForElement(set, level) }}</td>
                     <td :style="state.style.element">{{ getAverage(set) }}</td>
                 </tr>
