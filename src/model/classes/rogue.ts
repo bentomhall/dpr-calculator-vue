@@ -14,9 +14,9 @@ class Rogue extends ClassEntity implements BaselineProvider {
 
 	public presets(accuracyProvider: AccuracyProvider, accuracyMode: AccuracyMode): Preset[] {
 		return [
-			{name: 'Baseline Rogue', obj:new Rogue(new ClassOptions(0, 0, Dice.d6, 1), accuracyProvider, accuracyMode), type:'red'},
-			{name: 'TWF Rogue', obj: new Rogue(new ClassOptions(0, 0, Dice.d6, 1), accuracyProvider, accuracyMode), type:'twf'},
-			{name: 'Shortbow Rogue (100% advantage)', obj: new Rogue(new ClassOptions(1, 0, Dice.d6, 1), accuracyProvider, accuracyMode), type: 'red'}
+			{name: 'Baseline Rogue', obj:new Rogue(new ClassOptions(0, 0, Dice.d6, 1, null, null, null, new Map([['useSneakAttack', true]])), accuracyProvider, accuracyMode), type:'red'},
+			{name: 'TWF Rogue', obj: new Rogue(new ClassOptions(0, 0, Dice.d6, 1, null, null, null, new Map([['useSneakAttack', true]])), accuracyProvider, accuracyMode), type:'twf'},
+			{name: 'Shortbow Rogue (100% advantage)', obj: new Rogue(new ClassOptions(1, 0, Dice.d6, 1, null, null, null, new Map([['useSneakAttack', true]])), accuracyProvider, accuracyMode), type: 'red'}
 		]
 	}
 

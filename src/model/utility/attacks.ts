@@ -15,7 +15,7 @@ export class AttackSource {
 			disadvantage
 		}
 	}
-	public boomingBlade(level: number, procRate: number, modifier: number, weaponDie: number = Dice.d8) : {damage: number, accuracy: number} {
+	public boomingBlade(level: number, procRate: number, modifier: number, weaponDie: number = Dice.d8) : DamageOutput {
 		// let dmg = weaponDie + modifier;
 		let extraDice = 0;
 		let extraStatic = 0;
