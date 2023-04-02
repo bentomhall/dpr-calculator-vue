@@ -169,7 +169,7 @@ export class Wizard extends ClassEntity {
 		slots.reverse().forEach((v:number, i:number) => {
 			let counter = 0;
 			while (counter < v) {
-			  slotIndexes.push(i);
+			  slotIndexes.push(slots.length - i);
 			  counter += 1;
 			}
 		  }

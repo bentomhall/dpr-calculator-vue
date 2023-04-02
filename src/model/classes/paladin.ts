@@ -162,7 +162,7 @@ export class Paladin extends ClassEntity {
       copy.reverse().forEach((v:number, i:number) => {
         let counter = 0;
         while (counter < v) {
-          slotIndexes.push(copy.length - 1 - i);
+          slotIndexes.push(copy.length - i);
           counter += 1;
         }
       });
@@ -170,7 +170,7 @@ export class Paladin extends ClassEntity {
       copy.forEach((v:number, i:number) => {
         let counter = 0;
         while (counter < v) {
-          slotIndexes.push(i);
+          slotIndexes.push(i+1);
           counter += 1;
         }
       });
