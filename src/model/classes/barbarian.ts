@@ -44,6 +44,10 @@ export class Barbarian extends ClassEntity{
 		this.validTypes = ['frenzy', 'expt', 'no-sub']
 	}
 
+	public clone(): Barbarian {
+		return new Barbarian(structuredClone(this.options), this.accuracyProvider, this.accuracyMode);
+	}
+
 	getDescription(key: string): string {
 		switch(key) {
 			case 'useGWM':

@@ -37,6 +37,14 @@ class Rogue extends ClassEntity implements BaselineProvider {
 		return this
 	}
 
+	public clone(): Rogue {
+		return new Rogue(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+	}
+
+	private getClassOptions(): ClassOptions {
+		return new ClassOptions(this.options.advantage, this.options.disadvantage, this.options.baseDieSize, 0, null, null, null, new Map([['useSneakAttack', this.options.useSneakAttack]]))
+	}
+
 	calculate(type: string, level: number) {
 		switch(type) {
 			case 'red':

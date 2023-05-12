@@ -67,7 +67,8 @@ class Fighter extends ClassEntity {
 			disadvantage: options?.disadvantage ?? 0,
 			useActionSurge: options?.toggles?.get('useActionSurge') ?? false,
 			gWMProc: options?.dials?.get('gWMProc') ?? 0,
-			gWMStart: options?.dials?.get('gWMStart') ?? 21
+			gWMStart: options?.dials?.get('gWMStart') ?? 21,
+			pAMStart: options?.dials?.get('pam') ?? 0
 		}
 		this.resources = {
 			rests: options?.dials?.get('rests') ?? 0,
@@ -87,7 +88,8 @@ class Fighter extends ClassEntity {
 			disadvantage: options.disadvantage ?? 0,
 			useActionSurge: options.toggles?.get('useActionSurge') ?? false,
 			gWMProc: options.dials?.get('gWMProc') ?? 0,
-			gWMStart: options.dials?.get('gWMStart') ?? 21
+			gWMStart: options.dials?.get('gWMStart') ?? 21,
+			pAMStart: options.dials?.get('pam') ?? 0
 		}
 		this.resources = {
 			rests: options.dials?.get('rests') ?? 0,
@@ -118,8 +120,8 @@ class Fighter extends ClassEntity {
 	getConfigurables(): { common: Set<string>; toggles: Set<string>; dials: Set<string>; } {
 		return {
 			common:new Set(['weaponType', 'baseDieSize', 'advantage', 'disadvantage']),
-            toggles: new Set(['useActionSurge', 'pam']), 
-            dials: new Set(['gWMProc', 'gWMStart'])
+            toggles: new Set(['useActionSurge']), 
+            dials: new Set(['gWMProc', 'gWMStart', 'pam'])
 		}
 	}
 
@@ -138,6 +140,29 @@ class Fighter extends ClassEntity {
 		if (level < 2) { return 0; }
 		else if (level < 17) { return 1 * (shortRests + 1); }
 		return 2 * (shortRests + 1);
+	}
+	clone(): Fighter {
+		return new Fighter(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+	}
+
+	private getClassOptions(): ClassOptions {
+		return new ClassOptions(
+			this.options.advantage,
+			this.options.disadvantage,
+			this.options.baseDieSize,
+			0,
+			null,
+			null,
+			this.options.weaponType,
+			new Map([
+				['useActionSurge', this.options.useActionSurge],
+			]),
+			new Map([
+				['gWMProc', this.options.gWMProc],
+				['gWMStart', this.options.gWMStart],
+				['pam', this.options.pAMStart]
+			])
+		);
 	}
 
 	private greatWeaponMaster(level: number, actionSurgeRate: number, options: FighterOptions, source: AttackSource) : DamageOutput {

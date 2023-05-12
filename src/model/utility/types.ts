@@ -1,6 +1,8 @@
+import { ClassEntity } from "../classes/ClassEntity"
+
 export type Preset = {
 	name: string,
-	obj: any,
+	obj: ClassEntity,
 	type: string,
 	resources?: any | null,
 	options?: any | null

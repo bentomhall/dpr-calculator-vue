@@ -95,8 +95,30 @@ export class Paladin extends ClassEntity {
     return this
   }
 
+  clone(): Paladin {
+    return new Paladin(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+  }
 
-
+  private getClassOptions(): ClassOptions {
+    return new ClassOptions(
+      this.options.advantage,
+      this.options.disadvantage,
+      this.options.baseDieSize,
+      0,
+      null,
+      null,
+      this.options.weaponType,
+      new Map([
+        ['greatWeaponStyle', this.options.greatWeaponStyle],
+        ['greatWeaponMaster', this.options.greatWeaponMaster],
+        ['poleArmMaster', this.options.poleArmMaster],
+        ['oncePerTurn', this.resources.oncePerTurn],
+        ['highestSlotFirst', this.resources.highestSlotFirst]
+      ]),
+      new Map([['rounds', this.resources.rounds]])
+    )
+  }
+  
   public presets(provider: AccuracyProvider, mode: AccuracyMode): Preset[] {
     // return [
     //   ['paladin', { name: 'Regular GS', obj: this, type: 'gs', resources: null, options: { advantage: 0, disadvantage: 0, baseDie: 2 * Dice.d6, greatWeaponStyle: true, weaponType: WeaponDie.d6x2 } }],
@@ -162,7 +184,7 @@ export class Paladin extends ClassEntity {
       copy.reverse().forEach((v:number, i:number) => {
         let counter = 0;
         while (counter < v) {
-          slotIndexes.push(copy.length - 1 - i);
+          slotIndexes.push(copy.length - i);
           counter += 1;
         }
       });
@@ -170,7 +192,7 @@ export class Paladin extends ClassEntity {
       copy.forEach((v:number, i:number) => {
         let counter = 0;
         while (counter < v) {
-          slotIndexes.push(i);
+          slotIndexes.push(i+1);
           counter += 1;
         }
       });

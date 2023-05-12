@@ -24,6 +24,10 @@ class Cleric extends ClassEntity {
 		]
 	}
 
+	clone(): Cleric {
+		return new Cleric(this.getClassOptions(), this.accuracyProvider, this.accuracyMode)
+	}
+
 	constructor(options: ClassOptions | null, provider: AccuracyProvider, mode: AccuracyMode) {
 		super(provider, mode)
 		this.options = {
@@ -104,6 +108,10 @@ class Cleric extends ClassEntity {
 	private boomingBlade(level: number, procRate: number, modifier: number, weaponDie: number, provider: AccuracyProvider, mode: AccuracyMode) {
 		let attacks = new AttackSource(provider, mode, 0, 0);
 		return attacks.boomingBlade(level, procRate, modifier, weaponDie);
+	}
+
+	private getClassOptions(): ClassOptions {
+		return new ClassOptions(0, 0, this.options.cantripDie, this.options.procChance, 0, this.options.saveType, null, null, new Map([['uptime', this.options.uptime]]))
 	}
 }
 

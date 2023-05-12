@@ -32,6 +32,9 @@ export class Bard extends ClassEntity {
         }
         this.validTypes = ['cantrip-only', 'sword']
     }
+    clone() : Bard {
+        return new Bard(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+    }
     configure(options: ClassOptions): ClassEntity {
         this.options = {
             advantage: options.advantage,
@@ -78,6 +81,10 @@ export class Bard extends ClassEntity {
             toggles: new Set(),
             dials: new Set()
         }
+    }
+
+    private getClassOptions(): ClassOptions {
+        return new ClassOptions(this.options.advantage, this.options.disadvantage, this.options.baseDieSize, 0, 0, this.options.saveType)
     }
 }
 

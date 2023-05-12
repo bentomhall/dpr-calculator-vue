@@ -28,6 +28,24 @@ export class Sorcerer extends ClassEntity {
     this.validTypes = ['cantrip-only']
   }
 
+  clone(): Sorcerer {
+    return new Sorcerer(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+  }
+
+  private getClassOptions(): ClassOptions {
+    return new ClassOptions(
+      this.options.advantage,
+      this.options.disadvantage,
+      this.options.cantripDie,
+      0,
+      null,
+      null,
+      null,
+      new Map([['useQuicken', this.options.useQuicken], ['hasMatchingElementalAffinity', this.options.hasMatchingElementalAffinity]]),
+      new Map([['rounds', this.resources.rounds]])
+    );
+  }
+
   configure(options: ClassOptions): ClassEntity {
     this.options = {
       useQuicken: options?.toggles?.get('useQuicken') ?? false,

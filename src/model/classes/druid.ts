@@ -55,6 +55,14 @@ class Druid extends ClassEntity {
 		return this.bearForm(level);
 	}
 
+	clone() : Druid {
+		return new Druid(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+	}
+
+	private getClassOptions() : ClassOptions {
+		return new ClassOptions(this.options.advantage, this.options.disadvantage, 0, 0);
+	}
+
 	private produceFlame(level: number) {
 		let modifier = this.modifiers[level - 1];
 		let source = new AttackSource(this.accuracyProvider, this.accuracyMode, this.options.advantage, this.options.disadvantage);
