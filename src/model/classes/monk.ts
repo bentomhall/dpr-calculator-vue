@@ -41,6 +41,20 @@ class Monk extends ClassEntity {
 		this.validTypes = ['no-sub', 'mercy', 'astral']
 	}
 
+	clone(): Monk {
+		return new Monk(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+	}
+
+	private getClassOptions() : ClassOptions {
+		return new ClassOptions(
+			this.options.advantage,
+			this.options.disadvantage,
+			0, 0, null, null, null,
+			new Map([['unarmedOnly', this.options.unarmed]]),
+			new Map([['rounds', this.resources.rounds], ['rests', this.resources.rests]])
+		)
+	}
+
 	getDescription(key: string): string {
 		switch(key) {
 			case 'no-sub':

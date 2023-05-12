@@ -34,6 +34,7 @@ export class InputSet implements Calculable{
     public label: string
     public color: string
     public customData?: (number|null)[]
+    public key: string
 
     constructor(cls: ClassEntity, type: string, label: string, color: string) {
         this.provider = cls;
@@ -43,12 +44,14 @@ export class InputSet implements Calculable{
         if (cls instanceof CustomData) {
             this.customData = (cls as CustomData).data;
         }
+        this.key = crypto.randomUUID();
     }
 }
 
 export interface CalculationProvider {
     calculate(type: string, level: number): DamageOutput
     getSummary(): string[]
+    clone(): CalculationProvider
 }
 
 export class CalculationController {

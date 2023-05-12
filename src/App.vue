@@ -61,7 +61,7 @@ import { CustomData } from './model/classes/custom';
   }
 
   function onSelected(preset: Preset) {
-    state.calculableItems.push (new InputSet(preset.obj, preset.type, preset.name, Util.getRandomColor()));
+    state.calculableItems.push (new InputSet(preset.obj.clone(), preset.type, preset.name, Util.getRandomColor()));
     doCalculations()
   }
 
@@ -74,9 +74,12 @@ import { CustomData } from './model/classes/custom';
     state.showConfigs = !state.showConfigs
   }
 
-  function removeSelected(index: number){
-    state.calculableItems.splice(index, 1);
-    doCalculations();
+  function removeSelected(key: string){
+    let index = state.calculableItems.findIndex(f => f.key == key);
+    if (index >= 0) {
+      state.calculableItems.splice(index, 1);
+      doCalculations();
+    }
   }
   
 </script>
@@ -119,8 +122,8 @@ import { CustomData } from './model/classes/custom';
             <v-btn @click="clear" prepend-icon="mdi-delete" color="red-darken-3">Clear</v-btn>
           </v-list-item-action>
         </v-list-item>
-        <v-list-item v-for="(item, index) in state.calculableItems" :key="index">
-          <v-chip :closable="true" @click:close="removeSelected(index)" :label="true" :style="{backgroundColor:item.color}">{{ item.label }} <SummaryTooltip v-if="!item.customData" :item="item.provider" location="end"></SummaryTooltip></v-chip>
+        <v-list-item v-for="(item, index) in state.calculableItems" :key="item.key">
+          <v-chip :closable="true" @click:close="removeSelected(item.key)" :label="true" :style="{backgroundColor:item.color}">{{ item.label }} <SummaryTooltip v-if="!item.customData" :item="item.provider" location="end"></SummaryTooltip></v-chip>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

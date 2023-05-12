@@ -15,6 +15,10 @@ export abstract class ClassEntity implements CalculationProvider, PresetProvider
         this.accuracyProvider = accuracyProvider;
     }
 
+    clone(): ClassEntity {
+        throw new Error('Subclasses must implement this')
+    }
+
     configure(options: ClassOptions): ClassEntity {
         throw new Error('You need to implement me!')
     }

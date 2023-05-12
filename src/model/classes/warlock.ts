@@ -47,6 +47,24 @@ class Warlock extends ClassEntity {
 		}
 	}
 
+	clone(): Warlock {
+		return new Warlock(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+	}
+
+	private getClassOptions(): ClassOptions {
+		return new ClassOptions(
+			this.options.advantage,
+			this.options.disadvantage,
+			4.5,
+			0,
+			null,
+			null,
+			null,
+			new Map([['hasAB', this.options.hasAB]]),
+			new Map([['rounds', this.resources.rounds], ['duration', this.resources.duration]])
+		)
+	}
+
 	configure(options: ClassOptions): ClassEntity {
 		this.options = {
 			advantage: options.advantage,

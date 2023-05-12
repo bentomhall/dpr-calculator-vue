@@ -25,6 +25,24 @@ export class Ranger extends ClassEntity {
         this.validTypes = ['no-sub']
     }
 
+    clone(): Ranger {
+        return new Ranger(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+    }
+
+    private getClassOptions(): ClassOptions {
+        return new ClassOptions(
+            this.options.advantage,
+            this.options.disadvantage,
+            this.options.baseDieSize,
+            0, null, null, null, 
+            new Map([['hasArcheryFS', this.options.hasArcheryFS]]),
+            new Map([
+                ['markUptime', this.options.markUptime],
+                ['rounds', this.options.rounds]
+            ])
+        );
+    }
+
     configure(options: ClassOptions): ClassEntity {
         this.options = {
             advantage: options.advantage ?? 0,

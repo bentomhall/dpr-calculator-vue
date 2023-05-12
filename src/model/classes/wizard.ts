@@ -32,6 +32,31 @@ export class Wizard extends ClassEntity {
 		}
 	}
 
+	clone(): Wizard {
+		return new Wizard(this.getClassOptions(), this.accuracyProvider, this.accuracyMode);
+	}
+
+	private getClassOptions(): ClassOptions {
+		return new ClassOptions(
+			this.options.advantage,
+			this.options.disadvantage,
+			this.options.cantripDie,
+			this.options.procChance,
+			null,
+			null,
+			null,
+			new Map([
+				['useArcaneRecovery', this.options.useArcaneRecovery],
+				['magicMissileRollOnce', this.options.magicMissileRollOnce],
+				['empoweredEvocation', this.options.empoweredEvocation],
+				['preferWeapons', this.options.preferWeapons]
+			]),
+			new Map([
+				['rounds', this.options.rounds]
+			])
+		)
+	}
+
 	configure(options: ClassOptions): ClassEntity {
 		this.options = {
 			advantage: options.advantage ?? 0,
@@ -115,7 +140,7 @@ export class Wizard extends ClassEntity {
 		let attackProvider = new AttackSource(this.accuracyProvider, this.accuracyMode, this.options.advantage, this.options.disadvantage);
 		if (level < 6 && this.options.preferWeapons == false) {
 			let attackOptions = AttackDamageOptions.regularCantrip(level, this.options.cantripDie, 0, 0);
-			return attackProvider.attackCantrip(level, this.options.cantripDie ?? Dice.d10, spellMod, attackOptions);
+			return attackProvider.attackCantrip(level, 1, spellMod, attackOptions);
 		} else if (level < 6) {
 			return attackProvider.boomingBlade(level, this.options.procChance, weaponMod);
 		} else {
